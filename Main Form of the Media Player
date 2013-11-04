@@ -1,0 +1,735 @@
+Public Class Form1
+
+    Dim listboxfiles As Integer
+
+    Dim oReg As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.CurrentUser
+    Dim oKey As Microsoft.Win32.RegistryKey = oReg.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Run", True)
+    Dim playeach As Boolean
+    Dim RandomSong As Integer
+    Dim i As Integer
+    Dim MyRandom As Integer
+
+    Dim pause As Boolean
+    Dim fileinfo As IO.FileInfo
+
+
+    Dim MyFiles() As String
+    Dim MyNames() As String
+    'creates new listbox for holding paths
+    Dim pathlist As New ListBox
+
+    'test
+
+    Dim d As Integer
+    Dim item As String
+    Dim edititem As String
+
+
+    Private Sub ListBox1_DragEnter(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles ListBox1.DragEnter
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            e.Effect = DragDropEffects.All
+        End If
+    End Sub
+
+    Private Sub ListBox1_DragDrop(ByVal sender As Object, ByVal e As System.Windows.Forms.DragEventArgs) Handles ListBox1.DragDrop
+
+        'allows dragin and droping
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+
+
+            Dim i As Integer
+
+          
+            ' Assign the files to an array.
+            MyFiles = e.Data.GetData(DataFormats.FileDrop)
+
+
+            'test
+      
+            MyNames = e.Data.GetData(DataFormats.FileDrop)
+            Dim name As String
+            
+
+            'MsgBox(name)
+
+            '-------------------------------------
+
+            ' Loop through the array and add the files to the list.
+            For i = 0 To MyFiles.Length - 1
+                fileinfo = New IO.FileInfo(MyNames(i))
+                name = fileinfo.Name.Remove(fileinfo.Name.Length - 4, 4)
+
+
+                ListBox1.Items.Add(name)
+            Next
+            For i = 0 To MyFiles.Length - 1
+                pathlist.Items.Add(MyFiles(i))
+            Next
+          
+        End If
+    End Sub
+
+    Private Sub ListBox1_MouseDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListBox1.MouseDoubleClick
+
+        'mouse double click events
+
+        'Dim listboxfiles As Integer
+
+        listboxfiles = ListBox1.Items.Count
+
+        If listboxfiles > 0 And ListBox1.SelectedIndex > -1 Then
+
+            'MsgBox(ListBox1.SelectedItem)
+
+            'get selected index of 1 listbox
+            Dim a As Integer = ListBox1.SelectedIndex
+            'MsgBox(a.ToString)
+            pathlist.SelectedIndex = a
+            AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+
+            Timer1.Enabled = True
+
+        End If
+
+
+    End Sub
+
+    Private Sub ListBox1_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles ListBox1.KeyDown
+
+        ' keydown events
+
+        listboxfiles = ListBox1.Items.Count
+
+        If e.KeyCode = Keys.Delete And listboxfiles > 0 And ListBox1.SelectedIndex > -1 Then
+            Dim a As Integer = ListBox1.SelectedIndex
+            pathlist.SelectedIndex = a
+
+            'MsgBox("selected item is ready for deleting")
+            ListBox1.Items.RemoveAt(ListBox1.SelectedIndex)
+            pathlist.Items.RemoveAt(pathlist.SelectedIndex)
+
+
+        End If
+
+
+
+    End Sub
+
+   
+
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+
+        'play each song in playlist activated on startup of the app
+
+        playeach = True
+        Timer1.Enabled = True
+
+
+        ' load properties
+
+        btnStop.Width = 20
+
+        btnStop.Height = 20
+
+
+        'notify icon
+
+
+        NotifyIcon1.ShowBalloonTip(1000, "Windows Media Player Plus", "Media Player", ToolTipIcon.Info)
+
+        Label5.Text = Label5.Text + vbNewLine + "created by: Borecki Labs"
+
+     
+
+    End Sub
+
+    Private Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Tick
+        listboxfiles = ListBox1.Items.Count
+
+        'loop each song in playlist automatically
+        If playeach = True And RadioButton1.Checked = False And RadioButton2.Checked = False And listboxfiles > 1 Then
+            playeach = True
+         
+            Try
+                If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsStopped Then
+                    ListBox1.SelectedIndex = ListBox1.SelectedIndex + 1
+                    'new code
+                    Dim a As Integer = ListBox1.SelectedIndex
+                    pathlist.SelectedIndex = a
+
+
+                    '--------------------------
+                    AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+                End If
+            Catch ex As Exception
+                'No song/Invalid URL
+            End Try
+
+        End If
+
+        '  repeat selected song
+
+        If RadioButton1.Checked = True And listboxfiles > 0 Then
+            playeach = False
+
+
+            Try
+                If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsStopped Then
+                    ListBox1.SelectedIndex = ListBox1.SelectedIndex
+
+                    'new code
+                    Dim a As Integer = ListBox1.SelectedIndex
+                    pathlist.SelectedIndex = a
+                    pathlist.SelectedIndex = pathlist.SelectedIndex
+
+                    '----------------------------------------
+                    AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+                Else
+
+                    playeach = True
+
+
+                End If
+            Catch ex As Exception
+                'No song/Invalid URL
+            End Try
+
+        End If
+
+
+
+
+
+        'loop playlist
+        If RadioButton2.Checked = True And listboxfiles > 0 Then
+
+            playeach = True
+
+            listboxfiles = listboxfiles - 1
+
+            Try
+                If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsStopped And ListBox1.SelectedIndex() = listboxfiles Then
+                    ListBox1.SelectedIndex = 0
+                    'new code
+                    Dim a As Integer = ListBox1.SelectedIndex
+                    pathlist.SelectedIndex = a
+
+
+                    '-----------------------------------
+                    AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+                Else
+
+                    playeach = True
+
+
+                End If
+            Catch ex As Exception
+                'No song/Invalid URL
+            End Try
+
+
+        End If
+
+
+
+        If playeach = True And listboxfiles > 0 Then
+
+            Try
+                If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsStopped Then
+                    ListBox1.SelectedIndex = ListBox1.SelectedIndex + 1
+                    'new code 
+                    Dim a As Integer = ListBox1.SelectedIndex
+                    pathlist.SelectedIndex = a
+
+                    '-------------------------
+                    AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+                End If
+            Catch ex As Exception
+                'No song/Invalid URL
+            End Try
+        End If
+
+        'count items
+
+        Label4.Text = "items: " + ListBox1.Items.Count.ToString
+       
+        'textbox search validator
+
+        If TextBox1.Focused = True Then
+        Else
+            TextBox1.Text = "  Search"
+            Me.Height = 445
+        End If
+    End Sub
+
+
+    Private Sub btnStop_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnStop.Click
+
+        'stop playing media
+
+
+
+        AxWindowsMediaPlayer1.Ctlcontrols.stop()
+        Timer1.Enabled = False
+
+        PictureBox1.Visible = True
+        PictureBox2.Visible = False
+
+    End Sub
+
+
+    Private Sub PlaySelectedToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlaySelectedToolStripMenuItem.Click
+
+        'plays selected song
+
+      listboxfiles = ListBox1.Items.Count
+
+        If listboxfiles > 0 And ListBox1.SelectedIndex > -1 Then
+
+            'MsgBox(ListBox1.SelectedItem)
+            If AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPaused Then
+
+                AxWindowsMediaPlayer1.Ctlcontrols.play()
+
+            Else
+                'new code
+                Dim a As Integer = ListBox1.SelectedIndex
+                pathlist.SelectedIndex = a
+                '----------------------------
+
+                AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+            End If
+
+
+        End If
+
+    End Sub
+
+    Private Sub StopSelectedToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StopSelectedToolStripMenuItem.Click
+
+        'stop
+        AxWindowsMediaPlayer1.Ctlcontrols.stop()
+        Timer1.Enabled = False
+
+    End Sub
+
+    Private Sub RemoveSelectedSongToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RemoveSelectedSongToolStripMenuItem.Click
+
+        'removes selected song
+
+        listboxfiles = ListBox1.Items.Count
+
+        If listboxfiles > 0 And ListBox1.SelectedIndex > -1 Then
+
+            'MsgBox("selected item is ready for deleting")
+
+            'new code
+            Dim a As Integer = ListBox1.SelectedIndex
+            pathlist.SelectedIndex = a
+            pathlist.Items.RemoveAt(pathlist.SelectedIndex)
+            ListBox1.Items.RemoveAt(ListBox1.SelectedIndex)
+
+            '--------------------------
+
+        End If
+
+    End Sub
+
+    Private Sub ClearPlaylistToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ClearPlaylistToolStripMenuItem.Click
+
+        'clear playlist 
+
+        listboxfiles = ListBox1.Items.Count
+
+        If listboxfiles > 0 Then
+            ListBox1.Items.Clear()
+            'new code
+            pathlist.Items.Clear()
+            '---------------------
+
+
+        End If
+    End Sub
+
+    Private Sub AddSongToToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles AddSongToToolStripMenuItem.Click
+
+        'shows dialog1
+
+        OpenFileDialog1.ShowDialog()
+    End Sub
+
+    Private Sub OpenFileDialog1_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles OpenFileDialog1.FileOk
+
+        'opens dialog and adds items to listbox
+        'new code
+
+
+        '-------------------------------
+
+        For Each track As String In OpenFileDialog1.FileNames
+            'new code
+            ListBox1.Items.Add(OpenFileDialog1.SafeFileName.Remove(OpenFileDialog1.SafeFileName.Length - 4, 4))
+
+
+
+
+            pathlist.Items.Add(track)
+            '-------------------
+
+
+        Next
+    End Sub
+
+
+
+    Private Sub SetAsStartupToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles SetAsStartupToolStripMenuItem.Click
+
+        'creates startup value 
+
+        oKey.SetValue("Windows_Media_Player_Plus", Application.ExecutablePath)
+
+    End Sub
+
+    Private Sub RemoveFromStartupToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RemoveFromStartupToolStripMenuItem.Click
+
+        'deletes startup value
+
+        oKey.DeleteValue("Windows_Media_Player_Plus", False)
+
+    End Sub
+
+    Private Sub FullscreanToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FullscreanToolStripMenuItem.Click
+
+        ' Windows media player plus fullscrean
+
+        If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPlaying Then
+            'FullscreanToolStripMenuItem.Enabled = True - needed timer 
+            AxWindowsMediaPlayer1.fullScreen = True
+
+        Else
+            'FullscreanToolStripMenuItem.Enabled = False - needed timer
+
+        End If
+
+
+    End Sub
+
+
+
+    Private Sub ProgramToolStripMenuItem1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ProgramToolStripMenuItem1.Click
+        About.Show()
+    End Sub
+
+    Private Sub RadioToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RadioToolStripMenuItem.Click
+        OnlineRadio.Show()
+    End Sub
+
+    Private Sub Label2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Label2.Click
+        RadioButton1.Checked = False
+        RadioButton2.Checked = False
+
+    End Sub
+
+
+
+    Private Sub NotifyIcon1_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles NotifyIcon1.MouseClick
+        'MsgBox("hello")
+    End Sub
+    Private Sub NotifyIcon1_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles NotifyIcon1.DoubleClick
+        If Me.WindowState = FormWindowState.Minimized Then
+
+            Me.Show()
+            Me.WindowState = FormWindowState.Normal
+
+
+            Me.Activate()
+            Me.Focus()
+        Else
+
+            Me.WindowState = FormWindowState.Minimized
+        End If
+
+    End Sub
+
+
+
+
+    Private Sub ContextMenuStrip1_Opening(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs)
+
+    End Sub
+
+    Private Sub ShowToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
+
+    End Sub
+
+    Private Sub ShowWMPPToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ShowWMPPToolStripMenuItem.Click
+
+        Me.WindowState = FormWindowState.Normal
+
+    End Sub
+
+
+    Private Sub PlayToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlayToolStripMenuItem.Click
+
+
+        listboxfiles = ListBox1.Items.Count
+
+        If listboxfiles > 0 And ListBox1.SelectedIndex > -1 Then
+
+            'MsgBox(ListBox1.SelectedItem)
+            If AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPaused Then
+
+                AxWindowsMediaPlayer1.Ctlcontrols.play()
+
+            Else
+                'new code
+
+                Dim a As Integer = ListBox1.SelectedIndex
+                pathlist.SelectedIndex = a
+
+
+                '------------
+                AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+            End If
+
+
+        End If
+
+    End Sub
+
+    Private Sub PauseToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PauseToolStripMenuItem.Click
+
+        'If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPlaying Then
+
+
+        'AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPaused
+
+        'End If
+
+        AxWindowsMediaPlayer1.Ctlcontrols.pause()
+
+    End Sub
+
+    Private Sub StopToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StopToolStripMenuItem.Click
+        'stop playing media
+
+        AxWindowsMediaPlayer1.Ctlcontrols.stop()
+        Timer1.Enabled = False
+
+    End Sub
+
+    Private Sub PlayNextToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlayNextToolStripMenuItem.Click
+
+        Try
+            ' If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsStopped Then
+            ListBox1.SelectedIndex = ListBox1.SelectedIndex + 1
+            'new code
+            Dim a As Integer = ListBox1.SelectedIndex
+            pathlist.SelectedIndex = a
+
+
+            '-------------------------
+            AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+            'End If
+        Catch ex As Exception
+            'No song/Invalid URL
+        End Try
+
+        ' End If
+
+
+    End Sub
+
+    Private Sub PlayPreviousToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlayPreviousToolStripMenuItem.Click
+
+        Try
+            If ListBox1.SelectedIndex > 0 Then
+                ListBox1.SelectedIndex = ListBox1.SelectedIndex - 1
+                'new code
+                Dim a As Integer = ListBox1.SelectedIndex
+                pathlist.SelectedIndex = a
+
+
+                '---------------------------
+                AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+            End If
+
+
+
+
+        Catch ex As Exception
+
+            'No song/Invalid URL
+        End Try
+
+        ' End If
+
+
+
+    End Sub
+
+    Private Sub ExitWMPPToolStripMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ExitWMPPToolStripMenuItem.Click
+        Me.Close()
+    End Sub
+
+
+    Private Sub Timer2_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer2.Tick
+
+        MyRandom = Rnd() * 9
+        'MyRandom.ToString()
+
+        If MyRandom = 0 Then
+            Label3.ForeColor = Color.Red
+        End If
+        If MyRandom = 1 Then
+            Label3.ForeColor = Color.Green
+        End If
+        If MyRandom = 2 Then
+            Label3.ForeColor = Color.Blue
+        End If
+        If MyRandom = 3 Then
+            Label3.ForeColor = Color.Yellow
+        End If
+        If MyRandom = 4 Then
+            Label3.ForeColor = Color.Aqua
+        End If
+        If MyRandom = 5 Then
+            Label3.ForeColor = Color.Navy
+        End If
+        If MyRandom = 6 Then
+            Label3.ForeColor = Color.Olive
+        End If
+        If MyRandom = 7 Then
+            Label3.ForeColor = Color.Black
+        End If
+        If MyRandom = 8 Then
+            Label3.ForeColor = Color.Teal
+        End If
+        If MyRandom = 9 Then
+            Label3.ForeColor = Color.Lime
+        End If
+
+
+
+        'count all files while playing - fixing stop button bug
+
+        If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsStopped Then
+            PictureBox1.Visible = True
+            PictureBox2.Visible = False
+
+        End If
+        If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPlaying Then
+            PictureBox2.Visible = True
+            PictureBox1.Visible = False
+
+
+        End If
+        If Me.AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPaused Then
+            PictureBox1.Visible = True
+            PictureBox2.Visible = False
+
+        End If
+    End Sub
+
+
+    Private Sub PictureBox1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PictureBox1.Click
+
+        PictureBox2.Visible = True
+        PictureBox1.Visible = False
+
+        listboxfiles = ListBox1.Items.Count
+
+        If listboxfiles > 0 And ListBox1.SelectedIndex > -1 Then
+
+            'MsgBox(ListBox1.SelectedItem)
+            If AxWindowsMediaPlayer1.playState = WMPLib.WMPPlayState.wmppsPaused Then
+
+                AxWindowsMediaPlayer1.Ctlcontrols.play()
+                Timer1.Enabled = True
+
+            Else
+                'new code
+                Dim a As Integer = ListBox1.SelectedIndex
+                pathlist.SelectedIndex = a
+
+
+                '----------------
+
+                AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+                Timer1.Enabled = True
+
+            End If
+
+        End If
+
+    End Sub
+
+    Private Sub PictureBox2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PictureBox2.Click
+
+
+        AxWindowsMediaPlayer1.Ctlcontrols.pause()
+        PictureBox2.Visible = False
+        PictureBox1.Visible = True
+
+
+        Timer1.Enabled = True
+
+
+    End Sub
+
+    Private Sub TextBox1_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles TextBox1.MouseClick
+        TextBox1.Text = ""
+
+    End Sub
+
+   
+    Private Sub TextBox1_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox1.TextChanged
+
+        Me.Height = 508 ' 508
+        d = TextBox1.Text.Length
+
+        'code for serach in listbox - very useful
+         ListBox2.Items.Clear()
+        For Each item In ListBox1.Items
+            edititem = item
+            edititem = edititem.Substring(0, d)
+            'compare value with combobox
+            If TextBox1.Text = edititem Then
+                If ListBox2.Items.Contains(edititem) Then ' item for edititem
+                Else
+                    ListBox2.Items.Add(item)
+                End If
+
+            End If
+
+
+        Next
+        If TextBox1.Text = "" Then
+            ListBox2.Items.Clear()
+        End If
+
+    End Sub
+
+    Private Sub ListBox2_MouseDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles ListBox2.MouseDoubleClick
+
+        'For Each match As String In ListBox1.Items
+        ListBox1.SelectedItem = ListBox2.SelectedItem
+        Dim a As Integer = ListBox1.SelectedIndex
+        'MsgBox(a.ToString)
+        pathlist.SelectedIndex = a
+        AxWindowsMediaPlayer1.URL = pathlist.SelectedItem
+
+        'Next
+
+    End Sub
+   
+End Class
