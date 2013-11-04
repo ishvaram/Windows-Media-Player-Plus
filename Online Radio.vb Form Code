@@ -1,0 +1,177 @@
+Public Class OnlineRadio
+
+
+    Private Sub OnlineRadio_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+
+    End Sub
+
+    Private Sub btnPlay_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnPlay.Click
+
+
+
+        'POLISH RADIO
+
+
+        'kanal mix
+        If RadioButton1.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.radiosfera.pl/48.m3u"
+
+            Me.Close()
+        End If
+
+
+
+        'kanal club
+        If RadioButton8.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.radiosfera.pl/club.m3u"
+
+            Me.Close()
+        End If
+
+
+
+        'rmf max
+        If RadioButton4.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.miastomuzyki.pl/rmfmaxxx.asx"
+
+            Me.Close()
+        End If
+
+
+
+        'radio trojka
+        If RadioButton5.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.polskieradio.pl/st/program3M.asx"
+
+            Me.Close()
+        End If
+
+
+
+        'rmf fm
+        If RadioButton6.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.miastomuzyki.pl/odbior/rmffm.asx"
+
+            Me.Close()
+        End If
+
+
+        'eska rock
+        If RadioButton3.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.radio.pionier.net.pl/stream.asx?radio=eskarock"
+
+            Me.Close()
+        End If
+
+
+        'rmf fm classic
+        If RadioButton2.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.miastomuzyki.pl/odbior/rmfclassic.asx"
+
+            Me.Close()
+        End If
+
+
+        'kanal hip-hop pl
+        If RadioButton7.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.miastomuzyki.pl/rmfhiphop.asx"
+
+            Me.Close()
+        End If
+
+
+
+        'UK RADIO
+
+
+        'takeover
+        If RadioButton16.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.takeoverradio.co.uk/stream/streamcma.m3u"
+
+            Me.Close()
+        End If
+
+
+        'radio bbc 1
+        If RadioButton15.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://sradio.tv/asx/1827.asx"
+
+            Me.Close()
+        End If
+
+
+
+        'radio bbc 2
+        If RadioButton14.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://bbc.co.uk/radio/listen/live/r2.asx"
+
+            Me.Close()
+        End If
+
+
+        'bbc radio 3
+        If RadioButton10.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://bbc.co.uk/radio/listen/live/r3.asx"
+
+            Me.Close()
+        End If
+
+
+        'nonstopplay radio 
+        If RadioButton12.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://www.nonstopplay.com/broadband.asx"
+
+            Me.Close()
+        End If
+
+
+        'capital fm radio
+        If RadioButton13.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://mediasrv-sov.musicradio.com/CapitalRadio"
+
+            Me.Close()
+        End If
+
+
+        'radio heart - london
+        If RadioButton11.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://radioradio7.com/radio-asx/UK-Heart-London-1062-FM.asx"
+
+            Me.Close()
+        End If
+
+        'radio bbc 5
+        If RadioButton9.Checked = True Then
+
+            Form1.AxWindowsMediaPlayer1.URL = "http://bbc.co.uk/radio/listen/live/r5l.asx"
+
+            Me.Close()
+        End If
+    End Sub
+
+    Private Sub btnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCancel.Click
+
+        Me.Close()
+
+    End Sub
+
+    Private Sub RadioButton2_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RadioButton2.CheckedChanged
+
+    End Sub
+End Class
